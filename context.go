@@ -2,6 +2,7 @@ package cl
 
 // #cgo CFLAGS: -I/home/pblaberge/altera/14.0/hld/host/include
 // #cgo LDFLAGS: -L/home/pblaberge/Downloads/arrow_c5sockit_bsp/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -lalteracl -ldl -lacl_emulator_kernel_rt  -lalterahalmmd -lalterammdpcie -lelf -lrt -lstdc++
+// #include <stdlib.h>
 // #include "CL/opencl.h"
 import "C"
 
@@ -112,6 +113,23 @@ func (ctx *Context) CreateProgramWithSource(sources []string) (*Program, error) 
 	return program, nil
 }
 
+func (ctx *Context) CreateProgramWithBinary(device *Device, binary []byte) (*Program, error) {
+	cSources := []*C.uchar{(*C.uchar)(unsafe.Pointer(&binary[0]))}
+	cSourcesSizes := []C.size_t{C.size_t(len(cSources))}
+	var err C.cl_int
+	cDevices := []C.cl_device_id{device.nullableId()}
+	clProgram := C.clCreateProgramWithBinary(ctx.clContext, C.cl_uint(len(cDevices)), &cDevices[0], &cSourcesSizes[0], &cSources[0], nil, &err)
+	if err != C.CL_SUCCESS {
+		return nil, toError(err)
+	}
+	if clProgram == nil {
+		return nil, ErrUnknown
+	}
+	program := &Program{clProgram: clProgram, devices: ctx.devices}
+	runtime.SetFinalizer(program, releaseProgram)
+	return program, nil
+}
+
 func (ctx *Context) CreateBufferUnsafe(flags MemFlag, size int, dataPtr unsafe.Pointer) (*MemObject, error) {
 	var err C.cl_int
 	clBuffer := C.clCreateBuffer(ctx.clContext, C.cl_mem_flags(flags), C.size_t(size), dataPtr, &err)
@@ -144,6 +162,3 @@ func (ctx *Context) CreateUserEvent() (*Event, error) {
 func (ctx *Context) Release() {
 	releaseContext(ctx)
 }
-
-// http://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/clCreateSubBuffer.html
-// func (memObject *MemObject) CreateSubBuffer(flags MemFlag, bufferCreateType BufferCreateType, )

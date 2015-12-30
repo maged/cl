@@ -134,7 +134,6 @@ var errorMap = map[C.cl_int]error{
 	C.CL_INVALID_BUFFER_SIZE:                       ErrInvalidBufferSize,
 	C.CL_INVALID_MIP_LEVEL:                         ErrInvalidMipLevel,
 	C.CL_INVALID_GLOBAL_WORK_SIZE:                  ErrInvalidGlobalWorkSize,
-	C.CL_INVALID_PROPERTY:                          ErrInvalidProperty,
 }
 
 func toError(code C.cl_int) error {
