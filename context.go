@@ -115,7 +115,7 @@ func (ctx *Context) CreateProgramWithSource(sources []string) (*Program, error) 
 
 func (ctx *Context) CreateProgramWithBinary(device *Device, binary []byte) (*Program, error) {
 	cSources := []*C.uchar{(*C.uchar)(unsafe.Pointer(&binary[0]))}
-	cSourcesSizes := []C.size_t{C.size_t(len(cSources))}
+	cSourcesSizes := []C.size_t{C.size_t(len(binary))}
 	var err C.cl_int
 	cDevices := []C.cl_device_id{device.id}
 	clProgram := C.clCreateProgramWithBinary(ctx.clContext, C.cl_uint(len(cDevices)), &cDevices[0], &cSourcesSizes[0], &cSources[0], nil, &err)
