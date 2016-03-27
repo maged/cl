@@ -1,8 +1,8 @@
 package cl
 
-// #cgo CFLAGS: -I/home/pblaberge/altera/14.0/hld/host/include
-// #cgo LDFLAGS: -L/home/pblaberge/Downloads/arrow_c5sockit_bsp/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -lalteracl -ldl -lacl_emulator_kernel_rt  -lalterahalmmd -lalterammdpcie -lelf -lrt -lstdc++
-// #include "CL/opencl.h"
+// #cgo CFLAGS: -I/usr/local/cuda-7.0/include
+// #cgo LDFLAGS: -L/usr/local/cuda-7.0/lib64 -lOpenCL
+// #include "CL/cl.h"
 import "C"
 
 import (
@@ -106,6 +106,12 @@ func (q *CommandQueue) EnqueueWriteBufferFloat32(buffer *MemObject, blocking boo
 	return q.EnqueueWriteBuffer(buffer, blocking, offset, dataSize, dataPtr, eventWaitList)
 }
 
+func (q *CommandQueue) EnqueueWriteBufferFloat64(buffer *MemObject, blocking bool, offset int, data []float64, eventWaitList []*Event) (*Event, error) {
+	dataPtr := unsafe.Pointer(&data[0])
+	dataSize := int(unsafe.Sizeof(data[0])) * len(data)
+	return q.EnqueueWriteBuffer(buffer, blocking, offset, dataSize, dataPtr, eventWaitList)
+}
+
 // Enqueue commands to read from a buffer object to host memory.
 func (q *CommandQueue) EnqueueReadBuffer(buffer *MemObject, blocking bool, offset, dataSize int, dataPtr unsafe.Pointer, eventWaitList []*Event) (*Event, error) {
 	var event C.cl_event
@@ -114,6 +120,12 @@ func (q *CommandQueue) EnqueueReadBuffer(buffer *MemObject, blocking bool, offse
 }
 
 func (q *CommandQueue) EnqueueReadBufferFloat32(buffer *MemObject, blocking bool, offset int, data []float32, eventWaitList []*Event) (*Event, error) {
+	dataPtr := unsafe.Pointer(&data[0])
+	dataSize := int(unsafe.Sizeof(data[0])) * len(data)
+	return q.EnqueueReadBuffer(buffer, blocking, offset, dataSize, dataPtr, eventWaitList)
+}
+
+func (q *CommandQueue) EnqueueReadBufferFloat64(buffer *MemObject, blocking bool, offset int, data []float64, eventWaitList []*Event) (*Event, error) {
 	dataPtr := unsafe.Pointer(&data[0])
 	dataSize := int(unsafe.Sizeof(data[0])) * len(data)
 	return q.EnqueueReadBuffer(buffer, blocking, offset, dataSize, dataPtr, eventWaitList)

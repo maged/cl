@@ -1,8 +1,8 @@
 package cl
 
-// #cgo CFLAGS: -I/home/pblaberge/altera/14.0/hld/host/include
-// #cgo LDFLAGS: -L/home/pblaberge/Downloads/arrow_c5sockit_bsp/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -lalteracl -ldl -lacl_emulator_kernel_rt  -lalterahalmmd -lalterammdpcie -lelf -lrt -lstdc++
-// #include "CL/opencl.h"
+// #cgo CFLAGS: -I/usr/local/cuda-7.0/include
+// #cgo LDFLAGS: -L/usr/local/cuda-7.0/lib64 -lOpenCL
+// #include "CL/cl.h"
 import "C"
 
 import (
@@ -438,6 +438,7 @@ func (d *Device) Type() DeviceType {
 	return DeviceType(deviceType)
 }
 
+/*
 // Describes double precision floating-point capability of the OpenCL device
 func (d *Device) DoubleFPConfig() FPConfig {
 	var fpConfig C.cl_device_fp_config
@@ -446,7 +447,9 @@ func (d *Device) DoubleFPConfig() FPConfig {
 	}
 	return FPConfig(fpConfig)
 }
+*/
 
+/*
 // Describes the OPTIONAL half precision floating-point capability of the OpenCL device
 func (d *Device) HalfFPConfig() FPConfig {
 	var fpConfig C.cl_device_fp_config
@@ -455,6 +458,7 @@ func (d *Device) HalfFPConfig() FPConfig {
 	}
 	return FPConfig(fpConfig)
 }
+*/
 
 // Type of local memory supported. This can be set to CL_LOCAL implying dedicated
 // local memory storage such as SRAM, or CL_GLOBAL. For custom devices, CL_NONE

@@ -1,8 +1,8 @@
 package cl
 
-// #cgo CFLAGS: -I/home/pblaberge/altera/14.0/hld/host/include
-// #cgo LDFLAGS: -L/home/pblaberge/Downloads/arrow_c5sockit_bsp/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -lalteracl -ldl -lacl_emulator_kernel_rt  -lalterahalmmd -lalterammdpcie -lelf -lrt -lstdc++
-// #include "CL/opencl.h"
+// #cgo CFLAGS: -I/usr/local/cuda-7.0/include
+// #cgo LDFLAGS: -L/usr/local/cuda-7.0/lib64 -lOpenCL
+// #include "CL/cl.h"
 import "C"
 
 import (

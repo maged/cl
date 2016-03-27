@@ -1,8 +1,8 @@
 package cl
 
-// #cgo CFLAGS: -I/home/pblaberge/altera/14.0/hld/host/include
-// #cgo LDFLAGS: -L/home/pblaberge/Downloads/arrow_c5sockit_bsp/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -L/home/pblaberge/altera/14.0/hld/host/arm32/lib -lalteracl -ldl -lacl_emulator_kernel_rt  -lalterahalmmd -lalterammdpcie -lelf -lrt -lstdc++
-// #include "CL/opencl.h"
+// #cgo CFLAGS: -I/usr/local/cuda-7.0/include
+// #cgo LDFLAGS: -L/usr/local/cuda-7.0/lib64 -lOpenCL
+// #include "CL/cl.h"
 import "C"
 
 import (
@@ -39,6 +39,7 @@ func (k *Kernel) Release() {
 
 func (k *Kernel) SetArgs(args ...interface{}) error {
 	for index, arg := range args {
+        fmt.Printf("Will attempt setting arg at index: %d\n", index)
 		if err := k.SetArg(index, arg); err != nil {
 			return err
 		}
@@ -63,8 +64,21 @@ func (k *Kernel) SetArg(index int, arg interface{}) error {
 	case LocalBuffer:
 		return k.SetArgLocal(index, int(val))
 	default:
+		fmt.Printf("Reached unsported\n")
 		return ErrUnsupportedArgumentType{Index: index, Value: arg}
 	}
+}
+
+// Debugging function to get correct arg size at index
+func (k *Kernel) GetArgSize(index int) int {
+	var val C.cl_int
+	for i := 4; i <= 128; i += 4 {
+		err := k.SetArgUnsafe(0, i, unsafe.Pointer(&val))
+		if err == nil {
+			return i
+		}
+	}
+	return -1
 }
 
 func (k *Kernel) SetArgBuffer(index int, buffer *MemObject) error {
@@ -96,6 +110,7 @@ func (k *Kernel) SetArgLocal(index int, size int) error {
 }
 
 func (k *Kernel) SetArgUnsafe(index, argSize int, arg unsafe.Pointer) error {
+	fmt.Printf("Setting arg %v at index %d of size %d\n", arg, index, argSize)
 	return toError(C.clSetKernelArg(k.clKernel, C.cl_uint(index), C.size_t(argSize), arg))
 }
 
